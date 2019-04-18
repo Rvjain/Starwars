@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding">16dp</dimen>
+    <dimen name="icon_size">75dp</dimen>
+    <dimen name="display_name">22sp</dimen>
+    <dimen name="medal">12sp</dimen>
+    <dimen name="round_corner_radius">4dp</dimen>
+    <dimen name="item_padding">20dp</dimen>
+    <dimen name="medal_margin">8dp</dimen>
+</resources>
