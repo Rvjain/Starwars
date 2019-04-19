@@ -9,11 +9,16 @@ import com.interview.philo.view.viewholder.SearchVH
 
 class MainAdapter(private val clickListener: SearchVH.ItemClickListener) : RecyclerView.Adapter<SearchVH>() {
 
-    var items = listOf<SearchItem>()
+    var items = mutableListOf<SearchItem>()
         set(value) {
             field = value
             notifyDataSetChanged()
         }
+
+    fun addItems(list: List<SearchItem>) {
+        items.addAll(list)
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): SearchVH {
         val view = LayoutInflater.from(viewGroup.context)

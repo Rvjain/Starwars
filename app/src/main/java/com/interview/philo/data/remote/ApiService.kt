@@ -10,5 +10,5 @@ interface ApiService {
 
     @Headers("Content-Type: application/json")
     @GET("/api/people/")
-    fun search(@Query("search") searchTerm: String): Single<SearchResponse>
+    fun search(@Query("search") searchTerm: String, @Query("page") page: Int): Single<SearchResponse>
 }

@@ -15,12 +15,12 @@ class MainRepository @Inject constructor() {
     /**
      * Search the characters from star wars
      */
-    fun search(term: String): Single<List<SearchResponse.Result>> {
-        return api.search(term)
+    fun search(term: String, nextPage: Int): Single<SearchResponse> {
+        return api.search(term, nextPage)
             .subscribeOn(Schedulers.io())
             .doOnError{ error -> Log.e(TAG, "Error : " + error.message) }
             .map {
-                return@map it.results
+                return@map it
             }
     }
 

@@ -8,8 +8,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
-import com.interview.philo.R
 import com.interview.philo.data.remote.model.Resource
 import com.interview.philo.view.Constants
 import com.interview.philo.view.adapter.MainAdapter
@@ -31,11 +31,36 @@ class MainActivity : AppCompatActivity(), SearchVH.ItemClickListener {
     private val compositeDisposable = CompositeDisposable()
 
     private val adapter = MainAdapter(this)
+    private var currentPage: Int = 1
+    var isLastPage = false
+    private var isLoading = false
+
+    private val recyclerViewOnScrollListener = object: RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+
+            val layoutManager = recyclerView.layoutManager as? LinearLayoutManager
+
+            layoutManager?.let {
+                val visibleItemCount = it.childCount
+                val totalItemCount = it.itemCount
+                val firstVisibleItemPosition = it.findFirstVisibleItemPosition()
+
+                if (isLoading.not() && isLastPage.not()) {
+                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                        && firstVisibleItemPosition >= 0
+                        && totalItemCount >= 10) {
+                        searchViewModel.search(et_search.text.toString(), currentPage)
+                    }
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(com.interview.philo.R.layout.activity_main)
 
         initRecyclerView()
 
@@ -51,8 +76,8 @@ class MainActivity : AppCompatActivity(), SearchVH.ItemClickListener {
         rv_characters.layoutManager = LinearLayoutManager(this)
         rv_characters.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         rv_characters.adapter = adapter
-
-        rv_characters.setEmptyTextView(tv_empty, R.string.empty_text)
+        rv_characters.setEmptyTextView(tv_empty, com.interview.philo.R.string.empty_text)
+        rv_characters.addOnScrollListener(recyclerViewOnScrollListener)
     }
 
     private fun searchOnTextChange() {
@@ -63,7 +88,7 @@ class MainActivity : AppCompatActivity(), SearchVH.ItemClickListener {
             .distinctUntilChanged()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe ({
-                searchViewModel.search(it.text().trim().toString())
+                searchViewModel.search(it.text().trim().toString(), currentPage)
             }, {
                 Log.e(TAG, it.message)
             }))
@@ -73,17 +98,32 @@ class MainActivity : AppCompatActivity(), SearchVH.ItemClickListener {
         searchViewModel.searchesLiveData.observe(this, Observer {
             when(it?.status) {
                 Resource.Status.SUCCESS -> {
-                    it.data?.let { items ->
-                        adapter.items = items
+                    isLoading = false
+                    it.data?.let { response ->
+                        if (isLastPage.not()) {
+                            adapter.addItems(SearchItem.modelToItem(response.results))
+                        } else {
+                            adapter.items = SearchItem.modelToItem(response.results).toMutableList()
+                        }
+
+                        if (response.next != null) {
+                            isLastPage = false
+                            currentPage++
+                        } else {
+                            isLastPage = true
+                            currentPage = 1
+                        }
                     }
                 }
 
                 Resource.Status.ERROR -> {
-
+                    isLoading = false
+                    // todo - Error show error
                 }
 
                 Resource.Status.LOADING -> {
-
+                    // todo - Show loading while we are loading the data
+                    isLoading = true
                 }
             }
         })
@@ -98,6 +138,7 @@ class MainActivity : AppCompatActivity(), SearchVH.ItemClickListener {
     override fun onDestroy() {
         super.onDestroy()
         compositeDisposable.clear()
+        rv_characters.removeOnScrollListener(recyclerViewOnScrollListener)
     }
 
     companion object {
