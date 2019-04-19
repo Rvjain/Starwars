@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AttributeTextStyle">
+        <item name="android:textColor">#555555</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:drawablePadding">@dimen/half_padding</item>
+        <item name="android:layout_marginTop">@dimen/margin_16dp</item>
+        <item name="android:drawableTint">#cccccc</item>
+    </style>
+</resources>

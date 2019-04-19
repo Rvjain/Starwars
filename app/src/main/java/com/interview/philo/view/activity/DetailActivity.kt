@@ -22,5 +22,11 @@ class DetailActivity : AppCompatActivity() {
 
     private fun displayDetails() {
         tv_display_name.text = sectionItem.result.name
+        tv_height.text = sectionItem.result.height
+        tv_mass.text = sectionItem.result.mass
+        tv_hair_color.text = sectionItem.result.hairColor
+        tv_skin_color.text = sectionItem.result.skinColor
+        tv_eye_color.text = sectionItem.result.eyeColor
+        tv_gender.text = sectionItem.result.gender
     }
 }
