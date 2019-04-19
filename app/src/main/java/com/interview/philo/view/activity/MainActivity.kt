@@ -10,6 +10,7 @@ import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
+import android.view.View
 import com.interview.philo.data.remote.model.Resource
 import com.interview.philo.view.Constants
 import com.interview.philo.view.adapter.MainAdapter
@@ -50,6 +51,8 @@ class MainActivity : AppCompatActivity(), SearchVH.ItemClickListener {
                     if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                         && firstVisibleItemPosition >= 0
                         && totalItemCount >= 10) {
+                        pb_loading.visibility = View.VISIBLE
+                        isLoading = true
                         searchViewModel.search(et_search.text.toString(), currentPage)
                     }
                 }
@@ -99,6 +102,7 @@ class MainActivity : AppCompatActivity(), SearchVH.ItemClickListener {
             when(it?.status) {
                 Resource.Status.SUCCESS -> {
                     isLoading = false
+                    pb_loading.visibility = View.GONE
                     it.data?.let { response ->
                         if (isLastPage.not()) {
                             adapter.addItems(SearchItem.modelToItem(response.results))
@@ -119,6 +123,7 @@ class MainActivity : AppCompatActivity(), SearchVH.ItemClickListener {
                 Resource.Status.ERROR -> {
                     isLoading = false
                     // todo - Error show error
+                    pb_loading.visibility = View.GONE
                 }
 
                 Resource.Status.LOADING -> {
