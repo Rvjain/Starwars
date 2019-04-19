@@ -9,8 +9,8 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
-import com.interview.philo.data.remote.model.Resource
 import com.interview.philo.R
+import com.interview.philo.data.remote.model.Resource
 import com.interview.philo.view.Constants
 import com.interview.philo.view.adapter.MainAdapter
 import com.interview.philo.view.item.SearchItem
@@ -51,6 +51,8 @@ class MainActivity : AppCompatActivity(), SearchVH.ItemClickListener {
         rv_characters.layoutManager = LinearLayoutManager(this)
         rv_characters.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         rv_characters.adapter = adapter
+
+        rv_characters.setEmptyTextView(tv_empty, R.string.empty_text)
     }
 
     private fun searchOnTextChange() {
